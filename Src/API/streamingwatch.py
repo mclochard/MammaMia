@@ -47,7 +47,7 @@ async def search(showname,season,episode,date,ismovie,client):
         page_date = soup.find(id = 'search-cat-year').text.strip()
         if page_date == date:
            href = soup.find('a')['href']
-           response = await client.get(href, allow_redirects=True, impersonate = "chrome120")
+           response = await client.get(href)
            soup = BeautifulSoup(response.text,'lxml',parse_only=SoupStrainer('iframe'))
            iframe = soup.find('iframe')
            hdplayer = iframe.get('data-lazy-src')
@@ -55,11 +55,11 @@ async def search(showname,season,episode,date,ismovie,client):
            return hdplayer
     elif ismovie == 0:
         #Some series have the name in english so we first search with the categories option and then we use the obtained ID to get all the episodes
-        id_response = await client.get(f'https://streamingwatch.{SW_DOMAIN}/wp-json/wp/v2/categories?search={showname}&_fields=id', allow_redirects=True, impersonate = "chrome120")
+        id_response = await client.get(f'https://streamingwatch.{SW_DOMAIN}/wp-json/wp/v2/categories?search={showname}&_fields=id')
         data = json.loads(id_response.text)
         category_id = data[0]['id']
         query = f'https://streamingwatch.{SW_DOMAIN}/wp-json/wp/v2/posts?categories={category_id}&per_page=100'
-        response = await client.get(query, allow_redirects=True, impersonate = "chrome120")
+        response = await client.get(query)
         data_json = response.text
         data = json.loads(data_json)
         for entry in data:
@@ -72,7 +72,7 @@ async def search(showname,season,episode,date,ismovie,client):
                 hdplayer = content[start:end]
                 return hdplayer
 async def hls_url(hdplayer,client):
-    response = await client.get(hdplayer, allow_redirects=True, impersonate = "chrome120")
+    response = await client.get(hdplayer)
     match = re.search(r'sources:\s*\[\s*\{\s*file\s*:\s*"([^"]*)"', response.text)
     url = match.group(1)
     return url

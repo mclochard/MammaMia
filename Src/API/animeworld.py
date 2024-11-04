@@ -21,14 +21,14 @@ showname_replace = {
 }
 
 async def get_mp4(anime_url,ismovie,episode,client):
-    response = await client.get(anime_url,allow_redirects=True, impersonate = "chrome120")
+    response = await client.get(anime_url)
     soup = BeautifulSoup(response.text,'lxml')
     if ismovie == 0:
         episode_page = soup.find('a', {'data-episode-num':episode })
         if episode_page is None:
             return None
         episode_page = f'https://animeworld.{AW_DOMAIN}{episode_page["href"]}'
-        response = await client.get(episode_page,allow_redirects=True, impersonate = "chrome120")
+        response = await client.get(episode_page)
         soup = BeautifulSoup(response.text,'lxml')
 
     a_tag  = soup.find('a', {'id': 'alternativeDownloadLink', 'class': 'm-1 btn btn-sm btn-primary'}) 
@@ -72,7 +72,7 @@ async def old_search(showname,date,ismovie,episode,client):
         'keyword': showname,
     }
 
-    response = await client.post(f'https://www.animeworld.{AW_DOMAIN}/api/search/v2', params=params, cookies=cookies, headers=headers,allow_redirects=True, impersonate = "chrome120")
+    response = await client.post(f'https://www.animeworld.{AW_DOMAIN}/api/search/v2', params=params, cookies=cookies, headers=headers)
 
     data = json.loads(response.text)
     final_urls = []
@@ -93,7 +93,7 @@ async def old_search(showname,date,ismovie,episode,client):
     params = {
         'keyword': showname,
     }
-    response = await client.post(f'https://www.animeworld.{AW_DOMAIN}/api/search/v2', params=params, cookies=cookies, headers=headers, allow_redirects=True, impersonate = "chrome120")
+    response = await client.post(f'https://www.animeworld.{AW_DOMAIN}/api/search/v2', params=params, cookies=cookies, headers=headers)
     data = json.loads(response.text)
     for anime in data["animes"]:
         release_date = anime["release"]
@@ -112,13 +112,13 @@ async def old_search(showname,date,ismovie,episode,client):
 
 async def search(showname,date,ismovie,episode,client):
     search_year = date[:4] 
-    response = await client.get(f'https://www.animeworld.so/filter?year={search_year}&sort=2&keyword={showname}',allow_redirects=True, impersonate = "chrome120")
+    response = await client.get(f'https://www.animeworld.so/filter?year={search_year}&sort=2&keyword={showname}')
     soup = BeautifulSoup(response.text,'lxml')
     anime_list = soup.find_all('a', class_=['poster', 'tooltipstered'])
     final_urls = []
     for anime in anime_list:
         anime_info_url = f'https://www.animeworld.{AW_DOMAIN}/{anime["data-tip"]}'
-        response = await client.get(anime_info_url,allow_redirects=True, impersonate = "chrome120")
+        response = await client.get(anime_info_url)
         pattern = r'<label>Data di uscita:</label>\s*<span>\s*(.*?)\s*</span>'
         match = re.search(pattern, response.text, re.S)
         release_date = match.group(1).strip()

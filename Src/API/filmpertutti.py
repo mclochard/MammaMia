@@ -30,7 +30,7 @@ async def search(query,date,client,season,ismovie):
     for json in response:
         link = json['link']
         tid = json['id']
-        series_response = await client.get(link, headers=headers, allow_redirects=True, timeout = 30)
+        series_response = await client.get(link, headers=headers,  timeout = 30)
         series_soup = BeautifulSoup(series_response.text, 'lxml')
         release_span = series_soup.find('span', class_='released')
         if release_span:
@@ -76,10 +76,10 @@ def get_film(url):
 
 async def get_real_link(tlink,client):
     #Some basic code to get the mixdrop link
-    page = await client.get(tlink, headers=headers, allow_redirects=True)
+    page = await client.get(tlink, headers=headers)
     soup = BeautifulSoup(page.content, features="lxml",parse_only=SoupStrainer('iframe'))
     iframe_src = soup.find('iframe')['src']
-    iframe_page = await client.get(iframe_src, headers=headers, allow_redirects=True, timeout = 30)
+    iframe_page = await client.get(iframe_src, headers=headers,  timeout = 30)
     iframe_soup = BeautifulSoup(iframe_page.content, features="lxml")
 
     mega_button = iframe_soup.find('div', attrs={'class': 'megaButton', 'rel': 'nofollow'}, string='MIXDROP')
@@ -88,7 +88,7 @@ async def get_real_link(tlink,client):
         return real_link
     
 async def get_true_link(real_link,client):
-    response = await client.get(real_link, headers=headers, allow_redirects=True,timeout = 30)
+    response = await client.get(real_link, headers=headers, timeout = 30)
     [s1, s2] = re.search(r"\}\('(.+)',.+,'(.+)'\.split", response.text).group(1, 2)
     schema = s1.split(";")[2][5:-1]
     terms = s2.split("|")

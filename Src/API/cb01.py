@@ -26,7 +26,7 @@ async def get_uprot(link,client):
              link = link.replace("msf","mse")
 
         headers = fake_headers.generate()
-        response = await client.get(link, headers=headers, allow_redirects=True, timeout=10)
+        response = await client.get(link, headers=headers, timeout=10)
         soup = BeautifulSoup(response.text, "lxml")
         maxstream_url = soup.find("a")
         maxstream_url = maxstream_url.get("href")
@@ -36,7 +36,7 @@ async def get_true_link_mixdrop(real_link,client):
     try:
         import string
         headers = fake_headers.generate()
-        response = await client.get(real_link, headers=headers, allow_redirects=True,timeout = 30)
+        response = await client.get(real_link, headers=headers,timeout = 30)
         [s1, s2] = re.search(r"\}\('(.+)',.+,'(.+)'\.split", response.text).group(1, 2)
         schema = s1.split(";")[2][5:-1]
         terms = s2.split("|")
@@ -54,7 +54,7 @@ async def get_true_link_mixdrop(real_link,client):
 async def get_true_link_maxstream(maxstream_url,client):
         headers = fake_headers.generate()
         # Send a GET request to the Maxstream URL
-        response = await client.get(maxstream_url, headers=headers, allow_redirects=True, timeout=10)
+        response = await client.get(maxstream_url, headers=headers, timeout=10)
         [s1, s2] = re.search(r"\}\('(.+)',.+,'(.+)'\.split", response.text).group(1, 2)
         terms = s2.split("|")
         urlset_index = terms.index('urlset')
@@ -148,7 +148,7 @@ async def search_series(showname,date,client):
 
 async def movie_redirect_url(link,client):
         headers = fake_headers.generate()
-        response = client.get(link, headers=headers, allow_redirects=True, timeout=10)
+        response = client.get(link, headers=headers, timeout=10)
         # Extract the redirect URL from the HTML
         soup = BeautifulSoup(response.text, "lxml",parse_only=SoupStrainer('div', id='iframen1'))
         redirect_url = soup.find("div", id="iframen1").get("data-src")
@@ -157,7 +157,7 @@ async def series_redirect_url(link,season,episode,client):
         if len(episode) == 1:
                         episode = f'0{episode}'
         headers = fake_headers.generate()
-        response = await client.get(link, headers=headers, allow_redirects=True, timeout=10)
+        response = await client.get(link, headers=headers, timeout=10)
         soup = BeautifulSoup(response.text, "lxml")     
         seasons_text = soup.find_all('div', class_='sp-head')
         for season_text in seasons_text:
@@ -170,7 +170,7 @@ async def series_redirect_url(link,season,episode,client):
                     sp_body = season_text.find_next('div', class_='sp-body')
                     link_tag = sp_body.find('a')
                     uprot_long = link_tag.get('href')
-                    response = await client.get(uprot_long, headers=headers, allow_redirects=True, timeout=10)
+                    response = await client.get(uprot_long, headers=headers, timeout=10)
                     season = "01"
                     episode = "04"
                     pattern1 = rf"(?i)\S*?\.{season}x{episode}\S*?\.mkv.*?href=['\"](.*?)['\"]"

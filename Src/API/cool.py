@@ -83,7 +83,7 @@ async def search_imdb(showname,tmdba,client):
         showname = showname.replace(" ","%20")
         tmdba = str(tmdba)
         query = f'https://altadefinizione-originale.com/api/search?search={showname}&page=1'
-        response = await client.get(query,allow_redirects=True, impersonate = "chrome120")
+        response = await client.get(query)
         if response.status_code == 200:
             data = response.json()
             if 'data' in data:
