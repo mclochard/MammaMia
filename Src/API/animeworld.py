@@ -93,7 +93,7 @@ async def old_search(showname,date,ismovie,episode,client):
     params = {
         'keyword': showname,
     }
-    response = await client.post(f'https://www.animeworld.{AW_DOMAIN}/api/search/v2', params=params, cookies=cookies, headers=headers, allow_redirects=True, impersonate = "chrome120")
+    response = await client.post(f'https://www.animeworld.{AW_DOMAIN}/api/search/v2', params=params, cookies=cookies, headers=headers)
     data = json.loads(response.text)
     for anime in data["animes"]:
         release_date = anime["release"]

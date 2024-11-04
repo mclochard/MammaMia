@@ -60,7 +60,7 @@ async def get_episode(client,link,episode):
 
 
     episode = "6"
-    response = await client.get(link, cookies = cookies, headers = headers, params = params, impersonate="chrome120")
+    response = await client.get(link, cookies = cookies, headers = headers, params = params)
     print(link)
 
     pattern = rf'<a\s+href="([^"]+)"[^>]*>\s*Part {episode}\s*</a>'
@@ -74,7 +74,7 @@ async def search_movie(client,showname,id):
     showname = showname.replace(" ", "%20").replace("–", "+").replace("—","+")
     showname = urllib.parse.quote_plus(showname)
     link = f"https://ddlstreamitaly.co/search/?&q={showname}%20Streaming&quick=1&nodes=11&search_and_or=and&search_in=titles&sortby=relevancy"
-    response = await client.get(link,impersonate = "chrome120")
+    response = await client.get(link)
     soup = BeautifulSoup(response.text, 'lxml',parse_only=SoupStrainer('a'))
     a_tags = soup.find_all('a', {'data-linktype': 'link'})
     for a in a_tags:

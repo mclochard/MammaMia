@@ -12,7 +12,7 @@ from Src.API.animeworld import animeworld
 from Src.Utilities.dictionaries import okru,STREAM,extra_sources,webru_vary,webru_dlhd,provider_map,skystreaming
 from Src.API.epg import tivu, tivu_get,epg_guide,convert_bho_1,convert_bho_2,convert_bho_3
 from Src.API.webru import webru,get_skystreaming
-from curl_cffi.requests import AsyncSession
+from Src.Utilities.AsyncClient import CustomSession
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 from slowapi.middleware import SlowAPIMiddleware
@@ -128,7 +128,7 @@ async def addon_meta(request: Request,id: str):
     
     if not channel:
         raise HTTPException(status_code=404, detail="Channel not found")
-    async with AsyncSession() as client:
+    async with CustomSession() as client:
         if channel["id"] in convert_bho_1 or channel["id"] in convert_bho_2 or channel["id"] in convert_bho_3:
             description,title =  await epg_guide(channel["id"],client)
         elif channel["id"] in tivu:

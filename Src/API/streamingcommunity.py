@@ -16,6 +16,7 @@ SC_DOMAIN = config.SC_DOMAIN
 Public_Instance = config.Public_Instance
 Alternative_Link = env_vars.get('ALTERNATIVE_LINK')
 
+
 headers = Headers()
 #GET VERSION OF STREAMING COMMUNITY:
 async def get_version(client):
@@ -27,7 +28,7 @@ async def get_version(client):
         random_headers['Referer'] = f"https://streamingcommunity.{SC_DOMAIN}/"
         random_headers['Origin'] = f"https://streamingcommunity.{SC_DOMAIN}"
         base_url = f'https://streamingcommunity.{SC_DOMAIN}/richiedi-un-titolo' 
-        response = await client.get(base_url, headers=random_headers, allow_redirects = True, impersonate="chrome120")
+        response = await client.get(base_url, headers=random_headers)
         #Soup the response
         soup = BeautifulSoup(response.text, "lxml")
 
@@ -64,7 +65,7 @@ async def search(query,date,ismovie, client,SC_FAST_SEARCH):
                 random_headers = headers.generate()
                 random_headers['Referer'] = "https://streamingcommunity.buzz/"
                 random_headers['Origin'] = "https://streamingcommunity.buzz"
-                response = await client.get ( f'https://streamingcommunity.{SC_DOMAIN}/titles/{tid}-{slug}', headers = random_headers, allow_redirects=True,impersonate = "chrome120")
+                response = await client.get ( f'https://streamingcommunity.{SC_DOMAIN}/titles/{tid}-{slug}', headers = random_headers)
                 pattern = r'<div[^>]*class="features"[^>]*>.*?<span[^>]*>(.*?)<\/span>'
                 match = re.search(pattern, response.text)
                 print(match.group(1).split("-")[0])
@@ -87,7 +88,7 @@ async def get_film(tid,version,client):
     random_headers['x-inertia-version'] = version
     #Access the iframe
     url = f'https://streamingcommunity.{SC_DOMAIN}/iframe/{tid}'
-    response = await client.get(url, headers=random_headers, allow_redirects=True,impersonate = "chrome120")
+    response = await client.get(url, headers=random_headers)
     iframe = BeautifulSoup(response.text, 'lxml')
     #Get the link of iframe
     iframe = iframe.find('iframe').get("src")
@@ -101,7 +102,7 @@ async def get_film(tid,version,client):
     random_headers['x-inertia'] = "true"
     random_headers['x-inertia-version'] = version
     #Get real token and expires by looking at the page in the iframe, vixcloud/embed
-    resp = await client.get(iframe, headers = random_headers, allow_redirects=True,impersonate= "chrome120")
+    resp = await client.get(iframe, headers = random_headers)
     soup=  BeautifulSoup(resp.text, "lxml")
     script = soup.find("body").find("script").text
     token = re.search(r"'token':\s*'(\w+)'", script).group(1)
@@ -126,7 +127,7 @@ async def get_season_episode_id(tid,slug,season,episode,version,client):
     random_headers['x-inertia-version'] = version
     #Set some basic headers for the request  
       #Get episode ID 
-    response = await client.get(f'https://streamingcommunity.{SC_DOMAIN}/titles/{tid}-{slug}/stagione-{season}', headers=random_headers, allow_redirects=True, impersonate = "chrome120")
+    response = await client.get(f'https://streamingcommunity.{SC_DOMAIN}/titles/{tid}-{slug}/stagione-{season}', headers=random_headers)
     # Print the json got
     json_response = response.json().get('props', {}).get('loadedSeason', {}).get('episodes', [])
     for dict_episode in json_response:
@@ -144,7 +145,7 @@ async def get_episode_link(episode_id,tid,version,client):
             }
     #Let's try to get the link from iframe source
         # Make a request to get iframe source
-    response = await client.get(f"https://streamingcommunity.{SC_DOMAIN}/iframe/{tid}", params=params, headers = random_headers, allow_redirects=True, impersonate = "chrome120")
+    response = await client.get(f"https://streamingcommunity.{SC_DOMAIN}/iframe/{tid}", params=params, headers = random_headers)
 
     # Parse response with BeautifulSoup to get iframe source
     soup = BeautifulSoup(response.text, "lxml")
@@ -158,7 +159,7 @@ async def get_episode_link(episode_id,tid,version,client):
     parsed_url = urlparse(iframe)
     query_params = parse_qs(parsed_url.query)
     #Get real token and expires by looking at the page in the iframe, vixcloud/embed
-    resp = await client.get(iframe, headers = random_headers, allow_redirects=True, impersonate = "chrome120")
+    resp = await client.get(iframe, headers = random_headers)
     soup=  BeautifulSoup(resp.text, "lxml")
     script = soup.find("body").find("script").text
     token = re.search(r"'token':\s*'(\w+)'", script).group(1)

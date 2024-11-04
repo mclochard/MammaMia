@@ -31,14 +31,14 @@ async def search(showname,date,season,episode,ismovie,client):
         'media': showname,
         '_': '1724421723999',
     }
-    response = await client.get(f'https://lordchannel.{LC_DOMAIN}/live_search/', params=params, cookies=cookies, headers=headers, allow_redirects=True, impersonate = "chrome120")
+    response = await client.get(f'https://lordchannel.{LC_DOMAIN}/live_search/', params=params, cookies=cookies, headers=headers)
     data = json.loads(response.text)
     for entry in data['data']:
         if entry is not None:  # check if the a_tag exists
             href = entry['url']
             quality = entry['qualit\u00e0_video']
             link = f'https://lordchannel.{LC_DOMAIN}{href}'
-            response = await client.get(link, allow_redirects=True, impersonate = "chrome120")
+            response = await client.get(link)
             soup2 = BeautifulSoup(response.text,'lxml')
             li_tag = soup2.select_one("ul.card__meta li:nth-of-type(2)")
             if li_tag is not None:  # check if the li_tag exists
@@ -61,7 +61,7 @@ async def search(showname,date,season,episode,ismovie,client):
                     continue
 
 async def get_m3u8(video_url,client):
-    response = await client.get(video_url, allow_redirects=True, impersonate = "chrome120")
+    response = await client.get(video_url)
     pattern = r'const\s+videoData\s*=\s*\[(.*?)\];'
     match = re.search(pattern, response.text)
     if match:

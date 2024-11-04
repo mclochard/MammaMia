@@ -8,7 +8,7 @@ async def okru_get_url(id,client):
     try:
         embed_link = okru[id]
         print(embed_link)
-        response = await client.get(embed_link, allow_redirects=True, impersonate = "chrome120")
+        response = await client.get(embed_link)
         soup = BeautifulSoup(response.text, 'lxml')
         div = soup.find('div', {'data-module': 'OKVideo'})
         data_options = div.get('data-options')

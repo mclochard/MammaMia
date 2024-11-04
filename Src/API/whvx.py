@@ -74,7 +74,7 @@ async def whvx(id,client):
             "provider": "nova"
         }
     showname = urllib.parse.quote_plus(showname)
-    response = await client.get(f'https://api.whvx.net/search', params = params,  headers=headers, impersonate = "chrome120")
+    response = await client.get(f'https://api.whvx.net/search', params = params,  headers=headers)
     data = json.loads(response.text)
     url = data['url']
     print(data)
@@ -102,7 +102,7 @@ async def whvx(id,client):
         # Requests doesn't support trailers
         # 'TE': 'trailers',
     }
-    response = await client.get('https://api.whvx.net/source', params=params, headers=headers2, impersonate = "chrome120")
+    response = await client.get('https://api.whvx.net/source', params=params, headers=headers2)
     data = json.loads(response.text)
     resolution_links = {}
     for quality, details in data['stream'][0]['qualities'].items():

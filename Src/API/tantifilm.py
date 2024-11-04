@@ -13,12 +13,12 @@ async def search(showname,ismovie,date,client):
     showname = showname.replace(" ","%20")
     showname = urllib.parse.quote_plus(showname)
     url = f'https://www.tanti.bond/ajax/posts?q={showname}'
-    response =  await client.post(url, allow_redirects=True, impersonate = "chrome120")
+    response =  await client.post(url)
     response = response.json()['data']
     if ismovie == 1:
         for link in response:
             url = link['url']
-            response = client.get(url, allow_redirects=True, impersonate = "chrome120")
+            response = client.get(url)
             pattern = r'Data di rilascio\s*</div>\s*<div class="text">\s*(\d{4})\s*</div>'
             found_date = re.search(pattern, response.text)
             release_date = str(found_date.group(1))
@@ -31,7 +31,7 @@ async def search(showname,ismovie,date,client):
         for link in response:
             base_url = link['url']
             url = f'{base_url}-1-season-1-episode'
-            response = await client.get(url, allow_redirects=True, impersonate = "chrome120")
+            response = await client.get(url)
             pattern = r'Data di rilascio\s*</div>\s*<div class="text">\s*(\d{4})\s*</div>'
             found_date = re.search(pattern, response.text)
             release_date = str(found_date.group(1))
@@ -46,7 +46,7 @@ async def search(showname,ismovie,date,client):
 async def fast_search(showname,ismovie,client):
     showname = showname.replace(" ","%20")
     url = f'https://www.tanti.{TF_DOMAIN}/search/{showname}'
-    response = await client.get(url, allow_redirects=True, impersonate = "chrome120")
+    response = await client.get(url)
     soup = BeautifulSoup(response.text, "lxml")
     if ismovie == 1:
         first_link = soup.select_one('#movies .col .list-media')
@@ -57,7 +57,7 @@ async def fast_search(showname,ismovie,client):
         first_link = soup.select_one('#series .col .list-media')
         base_url = first_link['href']
         url = f'{base_url}-1-season-1-episode'
-        response = await client.get(url, allow_redirects=True, impersonate = "chrome120")
+        response = await client.get(url)
         soup = BeautifulSoup(response.text, 'lxml')
         a_tag = soup.find('a', class_='dropdown-toggle btn-service selected')
         embed_id = a_tag['data-embed']
@@ -67,14 +67,14 @@ async def fast_search(showname,ismovie,client):
 
 async def get_protect_link(id,url,client):
         #Get the link where the Iframe is located, which contains the doodstream url kind of. 
-        response = await client.get(f"https://p.hdplayer.casa/myadmin/play.php?id={id}", allow_redirects=True, impersonate = "chrome120")
+        response = await client.get(f"https://p.hdplayer.casa/myadmin/play.php?id={id}")
         soup = BeautifulSoup(response.text, "lxml", parse_only=SoupStrainer('iframe'))
         protect_link = soup.iframe['src'] 
         if "protect" in protect_link:
             return  protect_link
         else:
             #DO this in case the movie has  a 3D version etc
-            response = await client.get(url, allow_redirects=True, impersonate = "chrome120")
+            response = await client.get(url)
             soup = BeautifulSoup(response.text, 'lxml')
             a_tag = soup.find('a', class_='dropdown-toggle btn-service selected')
             embed_id = a_tag['data-embed']
@@ -89,7 +89,7 @@ async def get_protect_link(id,url,client):
             ajax_url = f"https://www.tanti.{TF_DOMAIN}/ajax/embed"
             response = await client.post(ajax_url, headers=headers, data=data)
             hdplayer = response.text[43:-27]
-            response = await client.get(hdplayer, allow_redirects=True, impersonate = "chrome120")
+            response = await client.get(hdplayer)
             soup = BeautifulSoup(response.text, 'lxml')
             links_dict = {}
             li_tags = soup.select('ul.nav.navbar-nav li.dropdown')
@@ -101,7 +101,7 @@ async def get_protect_link(id,url,client):
                     if title == "1" or "Tantifilm" in title:
                         continue # Get the text of the <a> tag
                     href = a_tag['href']  
-                    response = await client.get(href, allow_redirects=True, impersonate = "chrome120")
+                    response = await client.get(href)
                     soup = BeautifulSoup(response.text, "lxml", parse_only=SoupStrainer('iframe'))
                     protect_link = soup.iframe['src'] 
                     if "protect" in protect_link:
@@ -123,19 +123,19 @@ async def get_nuovo_indirizzo_and_protect_link(url,embed_id,season,episode,clien
     ajax_url = f"https://www.tanti.{TF_DOMAIN}/ajax/embed"
     response = await client.post(ajax_url, headers=headers, data=data)
     nuovo_indirizzo = response.text[43:-27]
-    response = await client.get(nuovo_indirizzo, allow_redirects=True, impersonate = "chrome120")
+    response = await client.get(nuovo_indirizzo)
     soup = BeautifulSoup(response.text, 'lxml')
     #Get season
     season = season - 1
     li_tags = soup.select('ul.nav.navbar-nav > li.dropdown')
     if len(li_tags) != 1:
         link = li_tags[season].find('a')['href']
-        response = await client.get(link, allow_redirects=True, impersonate = "chrome120")
+        response = await client.get(link)
         soup = BeautifulSoup(response.text, 'lxml')
         option_tag = soup.select(f'select[name="ep_select"] > option:nth-of-type({episode})')[0]
         link = option_tag['value']
         #Let's find protect link now
-        response = await client.get(link, allow_redirects=True, impersonate = "chrome120")
+        response = await client.get(link)
         soup = BeautifulSoup(response.text, "lxml", parse_only=SoupStrainer('iframe'))
         protect_link = soup.iframe['src'] 
         return  protect_link
@@ -145,7 +145,7 @@ async def get_nuovo_indirizzo_and_protect_link(url,embed_id,season,episode,clien
         option_tag = soup.select('select.dynamic_select > option')[episode]
         link = option_tag['value']
         #Let's find protect link now
-        response = await client.get(link, allow_redirects=True, impersonate = "chrome120")
+        response = await client.get(link)
         soup = BeautifulSoup(response.text, "lxml", parse_only=SoupStrainer('iframe'))
         protect_link = soup.iframe['src'] 
         return  protect_link
@@ -166,9 +166,9 @@ async def true_url(protect_link,client):
             "http": proxy,
             "https": proxy
         }
-        response = await client.get(protect_link, proxies=proxies, allow_redirects=True, impersonate = "chrome120")
+        response = await client.get(protect_link, proxies=proxies)
     else:
-        response = await client.get(protect_link, allow_redirects=True, impersonate = "chrome120")
+        response = await client.get(protect_link)
  
     
     if response.status_code == 200:
@@ -186,9 +186,9 @@ async def true_url(protect_link,client):
             # Create real link (match[0] includes all matched elements)
             url =f'https://d000d.com{match[1]}'
             if "HF" == "1" :
-                rebobo = await client.get(url, headers=headers, allow_redirects=True, impersonate = "chrome120",proxies= proxies)
+                rebobo = await client.get(url, headers=headers,proxies= proxies)
             else:
-                rebobo = await client.get(url, headers=headers, allow_redirects=True, impersonate = "chrome120")
+                rebobo = await client.get(url, headers=headers)
             real_url = f'{rebobo.text}123456789{match[2]}{real_time}'
             print("MammaMia: Found results for Tantifilm")
             return real_url
