@@ -170,6 +170,7 @@ async def addon_stream(request: Request,config, type, id,):
                 provider_maps[provider_name] = "1"
 
     async with CustomSession() as client:
+        print(client)
         if type == "tv":
             for channel in STREAM["channels"]:
                 if channel["id"] == id:
