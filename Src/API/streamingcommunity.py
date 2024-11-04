@@ -28,7 +28,11 @@ async def get_version(client):
         random_headers['Referer'] = f"https://streamingcommunity.{SC_DOMAIN}/"
         random_headers['Origin'] = f"https://streamingcommunity.{SC_DOMAIN}"
         base_url = f'https://streamingcommunity.{SC_DOMAIN}/richiedi-un-titolo' 
+        print("SUCA")
+        print(client)
+        print(client.get)
         response = await client.get(base_url, headers=random_headers)
+        print(response.text)
         #Soup the response
         soup = BeautifulSoup(response.text, "lxml")
 
