@@ -1,6 +1,6 @@
 from curl_cffi.requests import AsyncSession
 
-IMPERSONATE = "chrome120"
+IMPERSONATE = "chrome110"
 
 class CustomSession(AsyncSession):
     def __init__(self, *args, **kwargs):
