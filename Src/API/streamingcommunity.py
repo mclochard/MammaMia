@@ -28,11 +28,7 @@ async def get_version(client):
         random_headers['Referer'] = f"https://streamingcommunity.{SC_DOMAIN}/"
         random_headers['Origin'] = f"https://streamingcommunity.{SC_DOMAIN}"
         base_url = f'https://streamingcommunity.{SC_DOMAIN}/richiedi-un-titolo' 
-        print("SUCA")
-        print(client)
-        print(client.get)
         response = await client.get(base_url, headers=random_headers)
-        print(response.text)
         #Soup the response
         soup = BeautifulSoup(response.text, "lxml")
 
@@ -53,6 +49,7 @@ async def search(query,date,ismovie, client,SC_FAST_SEARCH):
     #Do a request to get the ID of serie/move and it's slug in the URL
     response = await client.get(query, headers = random_headers)
     print(response)
+    print(response.json())
     response = response.json()
 
     for item in response['data']:
