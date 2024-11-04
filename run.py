@@ -158,7 +158,6 @@ async def addon_meta(request: Request,id: str):
 
 
 @app.get('/{config}/stream/{type}/{id}.json')
-@limiter.limit("5/second")
 async def addon_stream(request: Request,config, type, id,):
     if type not in MANIFEST['types']:
         raise HTTPException(status_code=404)
@@ -170,7 +169,7 @@ async def addon_stream(request: Request,config, type, id,):
                 provider_name = provider_map[provider]
                 provider_maps[provider_name] = "1"
 
-    async with AsyncSession() as client:
+    async with CustomSession() as client:
         if type == "tv":
             for channel in STREAM["channels"]:
                 if channel["id"] == id:
