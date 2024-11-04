@@ -49,7 +49,7 @@ async def search(query,date,ismovie, client,SC_FAST_SEARCH):
     #Do a request to get the ID of serie/move and it's slug in the URL
     response = await client.get(query, headers = random_headers)
     print(response)
-    print(response.json())
+    print(response.text)
     response = response.json()
 
     for item in response['data']:
