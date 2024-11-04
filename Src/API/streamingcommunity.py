@@ -17,7 +17,13 @@ Public_Instance = config.Public_Instance
 Alternative_Link = env_vars.get('ALTERNATIVE_LINK')
 
 
-headers = Headers()
+headers = Headers(
+    browser="chrome",
+    headers=True
+)
+
+
+
 #GET VERSION OF STREAMING COMMUNITY:
 async def get_version(client):
     #Extract the version from the main page of the site
